@@ -1,4 +1,6 @@
-{
+{   "wito": {
+        "generateBindings": true
+    },
     "window": {
         "title": "wito",
         "width": 1200,

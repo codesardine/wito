@@ -42,6 +42,7 @@ class WebView(WebKit.WebView):
         self.wito_base_path = wito_base_path()
         self.dev_mode = wito_config.get("devMode")
         self.wito_dev_mode = wito_config.get("witoDevMode")
+        self.generate_bindings = wito_config.get("generateBindings", True)
         context = self.get_context()
         settings = self.get_settings()
         if self.dev_mode:
@@ -93,40 +94,44 @@ class WebView(WebKit.WebView):
         try:
             with open(f"{self.wito_base_path}/js/interface.js", 'r') as file:
                 interface_js = file.read()
-                            
-            with open(f"{self.wito_base_path}/js/method_template.js", 'r') as file:
-                method_template = file.read()
-                
-            with open(f"{self.wito_base_path}/js/property_template.js", 'r') as file:
-                property_template = file.read()
 
-            # Generate method bindings
-            method_bindings = []
-            for method_name, method in inspect.getmembers(self.api, inspect.ismethod):
-                if hasattr(method, '_exposed'):
-                    params = inspect.signature(method).parameters
-                    params_list = ', '.join(params.keys())
-                    args_object = ', '.join(f"{name}: {name}" for name in params.keys())
+            if self.generate_bindings:
+                with open(f"{self.wito_base_path}/js/method_template.js", 'r') as file:
+                    method_template = file.read()
                     
-                    binding = method_template\
-                        .replace('METHOD_NAME', method_name)\
-                        .replace('PARAMS', params_list)\
-                        .replace('ARGS_OBJECT', args_object)
-                    method_bindings.append(binding)
+                with open(f"{self.wito_base_path}/js/property_template.js", 'r') as file:
+                    property_template = file.read()
 
-            # Generate property bindings
-            property_bindings = []
-            for prop_name, prop in inspect.getmembers(self.api.__class__, lambda o: isinstance(o, property)):
-                if hasattr(prop.fget, '_exposed'):
-                    binding = property_template.replace('PROP_NAME', prop_name)
-                    property_bindings.append(binding)
+                # Generate method bindings
+                method_bindings = []
+                for method_name, method in inspect.getmembers(self.api, inspect.ismethod):
+                    if hasattr(method, '_exposed'):
+                        params = inspect.signature(method).parameters
+                        params_list = ', '.join(params.keys())
+                        args_object = ', '.join(f"{name}: {name}" for name in params.keys())
+                        
+                        binding = method_template\
+                            .replace('METHOD_NAME', method_name)\
+                            .replace('PARAMS', params_list)\
+                            .replace('ARGS_OBJECT', args_object)
+                        method_bindings.append(binding)
 
-            # Combine all bindings
-            js_bindings = interface_js\
-                .replace('// METHOD_BINDINGS_PLACEHOLDER', '\n'.join(method_bindings))\
-                .replace('// PROPERTY_BINDINGS_PLACEHOLDER', '\n'.join(property_bindings))\
-                .replace('// WITO_DEV_MODE_PLACEHOLDER', str(self.wito_dev_mode).lower())\
-                .replace('// APP_DEV_MODE_PLACEHOLDER', str(self.dev_mode).lower())
+                # Generate property bindings
+                property_bindings = []
+                for prop_name, prop in inspect.getmembers(self.api.__class__, lambda o: isinstance(o, property)):
+                    if hasattr(prop.fget, '_exposed'):
+                        binding = property_template.replace('PROP_NAME', prop_name)
+                        property_bindings.append(binding)
+
+                js_bindings = interface_js\
+                    .replace('// METHOD_BINDINGS_PLACEHOLDER', '\n'.join(method_bindings))\
+                    .replace('// PROPERTY_BINDINGS_PLACEHOLDER', '\n'.join(property_bindings))\
+                    .replace('// WITO_DEV_MODE_PLACEHOLDER', str(self.wito_dev_mode).lower())\
+                    .replace('// APP_DEV_MODE_PLACEHOLDER', str(self.dev_mode).lower())
+            else:
+                js_bindings = interface_js\
+                    .replace('// WITO_DEV_MODE_PLACEHOLDER', str(self.wito_dev_mode).lower())\
+                    .replace('// APP_DEV_MODE_PLACEHOLDER', str(self.dev_mode).lower())
 
             # Create and add the user script
             user_script = WebKit.UserScript.new(
