@@ -5,10 +5,11 @@ import inspect
 from concurrent.futures import Future
 gi.require_version('Gtk', '4.0')
 gi.require_version('WebKit', '6.0')
-from gi.repository import WebKit, Gio
+from gi.repository import WebKit, Gio, GLib
 from wito.interface import API
 from wito.utils import app_base_path, wito_base_path
 from wito.extensions.ext_loader import extension_manager
+from wito.file_watcher import setup_file_watcher
 
 
 class WitoProtocolHandler:
@@ -45,6 +46,7 @@ class WebView(WebKit.WebView):
         self.generate_bindings = wito_config.get("generateBindings", True)
         context = self.get_context()
         settings = self.get_settings()
+
         if self.dev_mode:
             settings.set_property("enable-developer-extras", self.dev_mode)
             settings.set_property("enable-write-console-messages-to-stdout", True)
@@ -57,7 +59,6 @@ class WebView(WebKit.WebView):
             self.api = API(self, window, wito_config.get("version"), wito_config.get("witoDevMode"))
 
         self.connect("load-changed", self.on_load_changed)
-
         self.get_user_content_manager().register_script_message_handler("Invoke")
         self.get_user_content_manager().connect("script-message-received::Invoke", self.on_invoke)
         
@@ -70,7 +71,8 @@ class WebView(WebKit.WebView):
         self.cleanup()
 
     def cleanup(self):
-        del self.app_base_path
+        if not self.dev_mode:
+            del self.app_base_path
         del self.wito_base_path
 
     def load_extensions(self):
@@ -89,6 +91,12 @@ class WebView(WebKit.WebView):
                 inspector = self.get_inspector()
                 if inspector:
                     inspector.show()
+                    GLib.timeout_add_seconds(
+                        1,
+                        setup_file_watcher,
+                        self.app_base_path,
+                        self.reload,
+                        ('.html', '.js', '.css'))
 
     def inject_bindings(self):
         try:
