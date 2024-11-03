@@ -14,6 +14,54 @@ class Wito {
         // PROPERTY_BINDINGS_PLACEHOLDER
     };
 
+        /**
+     * Invokes a Python method through WebKit message handlers.
+     * 
+     * This method creates a bridge between JavaScript and Python, allowing asynchronous 
+     * communication through WebKit message handlers. It generates a unique ID for each call
+     * and stores the promise callbacks for later resolution.
+     * 
+     * Args:
+     *     method (string): The name of the Python method to be called.
+     *     args (Array): An array of arguments to pass to the Python method.
+     * 
+     * Returns:
+     *     Promise: A promise that resolves with the Python method's result or rejects with an error.
+     * 
+     * Raises:
+     *     Error: When WebKit message handlers are not available.
+     * 
+     * Example:
+     *     ```javascript
+     *     // Basic usage
+     *     try {
+     *         const result = await this._invoke('get_data', ['user123']);
+     *         console.log(result);
+     *     } catch (error) {
+     *         console.error('Failed to get data:', error);
+     *     }
+     * 
+     *     // With multiple arguments
+     *     const userData = await this._invoke('save_user', [{
+     *         name: 'John',
+     *         age: 30
+     *     }]);
+     * 
+     *     // Without arguments
+     *     const status = await this._invoke('get_status', []);
+     *     ```
+     * 
+     * Notes:
+     *     - The method requires WebKit message handlers to be available
+     *     - The method requires the Python side to have a corresponding handler to be available
+     *     - Arguments must be JSON-serializable
+     *     - The callId is automatically incremented for each call
+     *     - Debug messages are logged if devMode is enabled
+     * 
+     * See Also:
+     *     - window.webkit.messageHandlers
+     *     - JSON.stringify()
+     */
     _invoke(method, args) {
         return new Promise((resolve, reject) => {
             const id = this.callId++;
