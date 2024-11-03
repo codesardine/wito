@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .container {
+        text-align: center;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 2em;
+    }
+    ul {
+        list-style-type: none; 
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+    
+</style>
+<body>
+    <div class="container">
+        <h1>New Wito App</h1>
+        <script>
+            wito.onReady(() => {
+                const ul = document.createElement('ul');
+                wito.getAllObjects().forEach(method => {
+                    const li = document.createElement('li');
+                    li.textContent = method;
+                    ul.appendChild(li);
+                });
+                document.querySelector('.container').appendChild(ul);    
+            });
+        </script>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+from wito.application import start
+from wito.interface import API
+import time
+
+
+class MyApp(API):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.greet = "Hello, welcome to wito"
+
+    @API.expose
+    def greet_user(self, name):
+        message = f"{self.greet} {name}!"
+        return {"message": message}
+
+    @API.expose
+    @API.thread
+    def long_task(self):
+        time.sleep(5)  
+        return {"status": "completed"}
+    
+
+if __name__ == "__main__":
+
+    try:
+        start(dev_mode=True, extended_api=MyApp)
+    except Exception as e:
+        print(e)

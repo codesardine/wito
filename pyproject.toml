@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "wito"
+version = "0.1"
+description = "Wito is a Python-based, Linux-only desktop application framework that bridges web technologies with native system capabilities through the power of WebKit. It allows to create efficient, modern applications with the flexibility of web interfaces and the performance of native desktop applications. This framework offers seamless interoperability between JavaScript and Python, native file system access, system notifications, and window management functionalities."
+authors = ["Vitor Lopes"]
+license = "LGPL"
+readme = "README.md"
+
+
+include = [
+    "wito/extensions/*", 
+    "wito/interface.js"      
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

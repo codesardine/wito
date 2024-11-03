@@ -1,0 +1,5 @@
+ /* disable unwanted default behavior */
+* {
+    -webkit-user-select: none;
+    cursor: default;
+}

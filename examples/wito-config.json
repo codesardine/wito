@@ -1,0 +1,10 @@
+{
+    "window": {
+        "title": "wito",
+        "width": 1200,
+        "height": 800,
+        "isFullScreen": false,
+        "isMaximized": false,
+        "isResizable": true
+    }
+}
