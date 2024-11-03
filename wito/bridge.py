@@ -37,6 +37,47 @@ class PythonJavaScriptBridge:
             self.view.evaluate_javascript(js, -1, None, callback or None)
 
     def emit_event(self, event, data):
+        """
+        Emits an event to the JavaScript layer with associated data.
+
+        This method bridges Python and JavaScript by triggering events in the JavaScript
+        environment. It serializes the Python data to JSON and calls the JavaScript
+        _emitEvent method.
+
+        Args:
+            event (str): The name of the event to emit.
+            data (Any): The data to pass with the event. Must be JSON-serializable.
+
+        Raises:
+            TypeError: If data cannot be serialized to JSON.
+            ValueError: If event name contains invalid characters.
+
+        Example:
+            ```python
+            # Simple event with string data
+            interface.emit_event('user_logged_in', 'John Doe')
+
+            # Event with dictionary data
+            interface.emit_event('data_updated', {
+                'id': 123,
+                'status': 'complete',
+                'timestamp': '2023-01-01'
+            })
+
+            # Event with list data
+            interface.emit_event('items_changed', [1, 2, 3, 4])
+            ```
+
+        Note:
+            - The data must be JSON-serializable
+            - Event names should follow JavaScript naming conventions
+            - The JavaScript layer must have the _emitEvent method defined
+            - Large data structures may impact performance
+
+        See Also:
+            - eval_js: Method used to execute JavaScript code
+            - json.dumps: JSON serialization method
+        """
         js = f"wito._emitEvent('{event}', {json.dumps(data)})"
         self.eval_js(js)
 
