@@ -5,12 +5,12 @@ from wito.core import WebView as webview
 
 
 class Window(Gtk.ApplicationWindow):
-    def __init__(self, *args, extended_api, config, application, version, dev_mode: bool, wito_dev_mode: bool, **kwargs):
+    def __init__(self, *args, extended_api, config, application, **kwargs):
         win_config = config.get("window")
         super().__init__(*args, application=application, **kwargs)
 
         self.app = application
-        self.webview = webview(self, extended_api, version, dev_mode, wito_dev_mode)
+        self.webview = webview(self, extended_api, config.get("wito"))
         self.set_default_size(
             win_config.get("width"),
             win_config.get("height"))

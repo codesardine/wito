@@ -5,17 +5,23 @@ from wito.window import Window
 from wito.utils import load_config
 
 class Application(Gtk.Application):
-    def __init__(self, extended_api, config, dev_mode, wito_dev_mode=False):
+    def __init__(self, extended_api, config, dev_mode=False, wito_dev_mode=False):
         win_config = config.get("window")
         title = win_config.get("title")
+        if "wito" not in config:
+           config["wito"] = {}
+        
+        wito_config = config.get("wito")
+        wito_config["devMode"] = dev_mode
+        wito_config["witoDevMode"] = wito_dev_mode
+        wito_config["version"] = "0.1"
+
         super().__init__(
             application_id=f"io.wito.{title.replace(' ', '')}",
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
+
         self.config = config
-        self.version = "0.1"  
-        self.dev_mode = dev_mode
-        self.wito_dev_mode = wito_dev_mode
         self.window = None
         self.extended_api = extended_api
 
@@ -27,10 +33,7 @@ class Application(Gtk.Application):
             self.window = Window(
                 extended_api = self.extended_api,
                 config = self.config,
-                application=self,
-                version=self.version,
-                dev_mode=self.dev_mode,
-                wito_dev_mode = self.wito_dev_mode
+                application=self
             )
 
         self.cleanup()
@@ -44,10 +47,7 @@ class Application(Gtk.Application):
         attributes_to_cleanup = [
             'extended_api',
             'config',
-            'version',
-            'dev_mode',
-            'wito_dev_mode'
-            'window'
+            'window',
         ]
         
         for attr in attributes_to_cleanup:

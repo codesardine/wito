@@ -35,34 +35,34 @@ class WitoProtocolHandler:
 
 
 class WebView(WebKit.WebView):
-    def __init__(self, window, extended_api, version: str, dev_mode: bool, wito_dev_mode: bool):
+    def __init__(self, window, extended_api, wito_config):
         self.content_manager = WebKit.UserContentManager()
         super().__init__(user_content_manager=self.content_manager)
         self.app_base_path = app_base_path()
         self.wito_base_path = wito_base_path()
-        self.dev_mode = dev_mode
-        self.wito_dev_mode = wito_dev_mode
+        self.dev_mode = wito_config.get("devMode")
+        self.wito_dev_mode = wito_config.get("witoDevMode")
         context = self.get_context()
-        self.settings = self.get_settings()
-        if dev_mode:
-            self.settings.set_property("enable-developer-extras", dev_mode)
-            self.settings.set_property("enable-write-console-messages-to-stdout", True)
+        settings = self.get_settings()
+        if self.dev_mode:
+            settings.set_property("enable-developer-extras", self.dev_mode)
+            settings.set_property("enable-write-console-messages-to-stdout", True)
         
         protocol_handler = WitoProtocolHandler()        
         context.register_uri_scheme("wito", protocol_handler.handle_request)
         if extended_api:
-            self.api = extended_api(self, window, version, wito_dev_mode)
+            self.api = extended_api(self, window, wito_config.get("version"), wito_config.get("witoDevMode"))
         else:
-            self.api = API(self, window, version, wito_dev_mode)
+            self.api = API(self, window, wito_config.get("version"), wito_config.get("witoDevMode"))
 
         self.connect("load-changed", self.on_load_changed)
 
         self.get_user_content_manager().register_script_message_handler("Invoke")
         self.get_user_content_manager().connect("script-message-received::Invoke", self.on_invoke)
         
-        self.settings.set_enable_javascript(True)
-        self.settings.set_hardware_acceleration_policy(WebKit.HardwareAccelerationPolicy.ALWAYS)
-        self.settings.set_user_agent_with_application_details("Wito", version)
+        settings.set_enable_javascript(True)
+        settings.set_hardware_acceleration_policy(WebKit.HardwareAccelerationPolicy.ALWAYS)
+        settings.set_user_agent_with_application_details("Wito", wito_config.get("version"))
         self.load_uri('wito://index.html')
         self.inject_bindings() 
         self.load_extensions()
@@ -71,8 +71,6 @@ class WebView(WebKit.WebView):
     def cleanup(self):
         del self.app_base_path
         del self.wito_base_path
-        del self.content_manager
-        del self.settings
 
     def load_extensions(self):
         extension_manager(

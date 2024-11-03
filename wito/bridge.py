@@ -92,7 +92,6 @@ class PythonJavaScriptBridge:
             color_scheme = self.settings.get_string("color-scheme")
             is_dark = color_scheme == "prefer-dark"
             if self.wito_dev_mode:
-                print(self.settings.list_keys())
                 print(f"Color scheme: {color_scheme}", f"isDark:{is_dark}")
             return is_dark
         except Exception as e:
