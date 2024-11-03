@@ -9,7 +9,6 @@ from gi.repository import WebKit, Gio, GLib
 from wito.interface import API
 from wito.utils import app_base_path, wito_base_path
 from wito.extensions.ext_loader import extension_manager
-from wito.file_watcher import setup_file_watcher
 
 
 class WitoProtocolHandler:
@@ -88,6 +87,7 @@ class WebView(WebKit.WebView):
         if load_event == WebKit.LoadEvent.FINISHED:
             self.api.execute_pending_js()
             if self.dev_mode:
+                from wito.file_watcher import setup_file_watcher
                 inspector = self.get_inspector()
                 if inspector:
                     inspector.show()
