@@ -2,7 +2,7 @@
 
 Wito is a Python-based, Linux-only desktop application framework that bridges web technologies with native system capabilities through WebKit. It allows to create efficient, modern applications with the flexibility of web interfaces and the performance of native desktop applications. Wito offers seamless interoperability between JavaScript and Python. 
 
-Wito autogenerates JavaScript bindings from interface.API, you can disable this in wito.config.json, API can still be accessed using the _invoke Javascript method.
+Wito autogenerates JavaScript bindings from interface.API, you can disable this in wito.config.json, API can still be accessed using the _invoke JavaScript method.
 
 This was done out out my disire to have a framework for fast Linux prototyping and is not tested across diferent distributions.
 

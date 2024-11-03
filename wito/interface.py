@@ -8,6 +8,56 @@ from wito.bridge import PythonJavaScriptBridge
   
 
 class API(PythonJavaScriptBridge):
+    """ API Usage
+
+    This class creates a bridge between JavaScript and Python, allowing asynchronous 
+    communication.
+
+    Example:
+        Basic usage:
+        ```python
+        # Initialize API
+        from wito.interface import API
+        
+        class MyApp(API):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+
+            def method(self):
+                return "Hello"
+
+        ```
+        
+    Javascript Example:
+        Using _invoke:
+        ```javascript
+        // Basic usage
+        try {
+            const result = await wito._invoke('method', []);
+            console.log(result);
+        } catch (error) {
+            console.error('Failed to get data:', error);
+        }
+
+        // With multiple arguments
+        const userData = await wito._invoke('save_user', [{
+            name: 'John',
+            age: '30'
+        }]);
+        ```
+        
+    Notes:
+        - The method requires WebKit message handlers to be available
+        - The method requires the Python side to have a corresponding handler to be available
+        - Arguments must be JSON-serializable
+        - The callId is automatically incremented for each call
+        - Debug messages are logged if devMode is enabled
+        - Using _invoke from Javascript is not needed, as all the bindings are generated at runtime 
+    
+    See Also:
+        - window.webkit.messageHandlers
+        - JSON.stringify()
+    """
     num_cpus = max(os.cpu_count() or 1, 4) # Default to 4 if cpu_count() returns None
     workers = min(num_cpus + 1, 16) # Use the number of CPU cores + 1, but cap it at 16
     executor = ThreadPoolExecutor(workers)
@@ -25,12 +75,15 @@ class API(PythonJavaScriptBridge):
 
         Example:
             ```python
-            class MyClass:
-                @expose
-                @thread  
-                def long_operation(self):
-                    time.sleep(1)
-                    return {"status": "completed"}
+            class MyApp(API):
+                def __init__(self, *args, **kwargs):
+                    super().__init__(*args, **kwargs)
+
+                    @expose
+                    @thread  
+                    def long_operation(self):
+                        time.sleep(1)
+                        return {"status": "completed"}
             ```
 
         Note:
@@ -56,24 +109,25 @@ class API(PythonJavaScriptBridge):
 
         Example:
             ```python
-            class MyClass:
-                def __init__(self, my_value):
-                    self.my_property = my_value
+            class MyApp(API):
+                def __init__(self, *args, **kwargs):
+                    super().__init__(*args, **kwargs)
+                        self.my_property = my_value
 
-                    @expose
-                    def my_method(self, param):
-                        return {"result": param}
-                    
-                    @property # read only property.
-                    @expose  
-                    def my_property(self):
-                        return {"result": self.my_property}
-                    
-                    @my_property.setter # combine with above to turn it in a write property.
-                    @expose  
-                    def my_property(self, value):
-                        self.my_property = value
-                        return {"success": True}
+                        @expose
+                        def my_method(self, param):
+                            return {"result": param}
+                        
+                        @property # read only property.
+                        @expose  
+                        def my_property(self):
+                            return {"result": self.my_property}
+                        
+                        @my_property.setter # combine with above to turn it in a write property.
+                        @expose  
+                        def my_property(self, value):
+                            self.my_property = value
+                            return {"success": True}
             ```
 
         Note:
