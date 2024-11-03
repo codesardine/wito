@@ -33,10 +33,26 @@ class Application(Gtk.Application):
                 wito_dev_mode = self.wito_dev_mode
             )
 
+        self.cleanup()
+
     def run(self):
         self.register()
         self.activate()
         self.quit()
+
+    def cleanup(self):
+        attributes_to_cleanup = [
+            'extended_api',
+            'config',
+            'version',
+            'dev_mode',
+            'wito_dev_mode'
+            'window'
+        ]
+        
+        for attr in attributes_to_cleanup:
+            if hasattr(self, attr) and attr is not None:
+                delattr(self, attr)
 
 
 def start(extended_api = None, dev_mode: bool = False):

@@ -61,8 +61,7 @@ class PythonJavaScriptBridge:
         is_dark = self.check_theme()
         self.set_body_theme_class(is_dark)
 
-    def on_theme_change(self, settings, key):
-        
+    def on_theme_change(self, settings, key):        
         is_dark = self.check_theme()
         self.set_body_theme_class(is_dark)
 

@@ -15,8 +15,6 @@ class Window(Gtk.ApplicationWindow):
             win_config.get("width"),
             win_config.get("height"))
         
-        # seems on wayland windows cannot be centered
-        self.present()
         if win_config.get("isResizable"):
             self.set_resizable(win_config.get("isResizable", True))
                 
@@ -29,9 +27,15 @@ class Window(Gtk.ApplicationWindow):
         self.set_child(self.webview)
         self.connect("close-request", self.on_close_request)
         self.connect('realize', self.on_realize)
+        self.cleanup()
+        self.present()
+
+        
+    def cleanup(self):
+        del self.webview
         
     def on_realize(self, widget):
-        self.set_modal(True)
+        # seems on wayland windows cannot be centered
         self.present()
 
     def on_close_request(self, *args):

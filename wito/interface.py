@@ -4,8 +4,6 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from gi.repository import Gtk
 from wito.utils import app_base_path
-from wito.notifications import notify
-import wito.screen
 from wito.bridge import PythonJavaScriptBridge
   
 
@@ -111,6 +109,8 @@ class API(PythonJavaScriptBridge):
 
     @expose
     def screen_get_info(self):
+        from wito.screen import get_info
+
         """Get information about the current screen.
 
         Returns:
@@ -122,7 +122,7 @@ class API(PythonJavaScriptBridge):
             console.log('Screen info:', screenInfo);
             ```
         """
-        return wito.screen.get_info(self.win)
+        return get_info(self.win)
 
     @expose
     def win_is_fullscreen(self):
@@ -437,6 +437,8 @@ class API(PythonJavaScriptBridge):
 
     @expose
     def notify(self, title, body, priority='normal'):
+        from wito.notifications import notify
+
         """Show a system notification.
 
         Args:

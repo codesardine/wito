@@ -66,6 +66,13 @@ class WebView(WebKit.WebView):
         self.load_uri('wito://index.html')
         self.inject_bindings() 
         self.load_extensions()
+        self.cleanup()
+
+    def cleanup(self):
+        del self.app_base_path
+        del self.wito_base_path
+        del self.content_manager
+        del self.settings
 
     def load_extensions(self):
         extension_manager(
