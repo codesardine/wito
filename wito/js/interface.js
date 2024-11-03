@@ -24,6 +24,8 @@ class Wito {
      * Args:
      *     method (string): The name of the Python method to be called.
      *     args (Array): An array of arguments to pass to the Python method.
+     *     Items in Array must be dict keys. 
+     *     Dict values must be (string).
      * 
      * Returns:
      *     Promise: A promise that resolves with the Python method's result or rejects with an error.
@@ -35,20 +37,20 @@ class Wito {
      *     ```javascript
      *     // Basic usage
      *     try {
-     *         const result = await this._invoke('get_data', ['user123']);
+     *         const result = await wito._invoke('get_data', [{'username': 'user123']});
      *         console.log(result);
      *     } catch (error) {
      *         console.error('Failed to get data:', error);
      *     }
      * 
      *     // With multiple arguments
-     *     const userData = await this._invoke('save_user', [{
+     *     const userData = await wito._invoke('save_user', [{
      *         name: 'John',
-     *         age: 30
+     *         age: '30'
      *     }]);
      * 
      *     // Without arguments
-     *     const status = await this._invoke('get_status', []);
+     *     const status = await wito._invoke('get_status', []);
      *     ```
      * 
      * Notes:
