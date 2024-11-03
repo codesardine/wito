@@ -5,6 +5,7 @@ Wito is a Python-based, Linux-only desktop application framework that bridges we
 ## Dependencies
 
 GTK 4
+
 WebKit 6
 
 ## Quick Started
@@ -35,3 +36,5 @@ wito.onReady(() => {
     await wito.notify('Hello', 'This is a notification', 'normal');    
 });
 ```
+
+[Docs](https://codesardine.github.io/wito/)
