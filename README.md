@@ -2,6 +2,8 @@
 
 Wito is a Python-based, Linux-only desktop application framework that bridges web technologies with native system capabilities through WebKit. It allows to create efficient, modern applications with the flexibility of web interfaces and the performance of native desktop applications. Wito offers seamless interoperability between JavaScript and Python.
 
+This was done out out my disire to have a framework for fast Linux prototyping and is not tested across diferent distributions.
+
 ## Dependencies
 * GTK 4
 * WebKit 6
@@ -36,4 +38,4 @@ wito.onReady(() => {
 });
 ```
 
-[Docs](https://codesardine.github.io/wito/)
+[API Docs](https://codesardine.github.io/wito/)
