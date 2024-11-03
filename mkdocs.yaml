@@ -51,3 +51,5 @@ nav:
   - Home: index.md
   - Reference:
     - Interface: reference/wito/interface.md
+    - Configuration:
+      - Settings: reference/configuration/settings.md
