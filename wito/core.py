@@ -18,19 +18,26 @@ class WitoProtocolHandler:
     def handle_request(self, request):
         uri = request.get_uri()
         scheme, path = uri.split('://', 1)        
-        path = path.split('?')[0]        
+        path = path.split('?')[0]   
+        if path.startswith('index.html/'):
+            path = path.replace('index.html/', '', 1)   
         file_path = os.path.join(app_base_path(), path)
         
         if os.path.exists(file_path) and os.path.isfile(file_path):
-            content_type, _ = Gio.content_type_guess(file_path, None)
+            content_type, _ = Gio.content_type_guess(file_path, None) 
             with open(file_path, 'rb') as f:
                 contents = f.read()
             
             stream = Gio.MemoryInputStream.new_from_data(contents, None)
+            request.finish(stream, len(contents), content_type)
         else:
-            request.finish_error(Gio.IOErrorEnum.NOT_FOUND, "File not found")
-
-        request.finish(stream, len(contents), content_type)
+            error = GLib.Error.new_literal(
+                Gio.io_error_quark(), 
+                "File not found",
+                4)
+            
+            request.finish_error(error)
+            print(file_path, str(error))        
         return True
 
 
