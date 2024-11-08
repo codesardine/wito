@@ -121,15 +121,19 @@ class WebView(WebKit.WebView):
                 method_bindings = []
                 for method_name, method in inspect.getmembers(self.api, inspect.ismethod):
                     if hasattr(method, '_exposed'):
-                        params = inspect.signature(method).parameters
-                        params_list = ', '.join(params.keys())
-                        args_object = ', '.join(f"{name}: {name}" for name in params.keys())
-                        
-                        binding = method_template\
-                            .replace('METHOD_NAME', method_name)\
-                            .replace('PARAMS', params_list)\
-                            .replace('ARGS_OBJECT', args_object)
-                        method_bindings.append(binding)
+                        try:
+                            params = inspect.signature(method).parameters
+                            params_list = ', '.join(params.keys())
+                            args_object = ', '.join(f"{name}: {name}" for name in params.keys())
+                            
+                            binding = method_template\
+                                .replace('METHOD_NAME', method_name)\
+                                .replace('PARAMS', params_list)\
+                                .replace('ARGS_OBJECT', args_object)
+                            method_bindings.append(binding)
+                        except ValueError as e:
+                            print(f"Error processing method {method_name}: {e}")
+                            # Skip this method if we can't process its signature
 
                 # Generate property bindings
                 property_bindings = []
@@ -159,7 +163,9 @@ class WebView(WebKit.WebView):
             self.get_user_content_manager().add_script(user_script)
         except Exception as e:
             print(f"Error injecting wito.js and bindings: {e}")
-
+            # Print the full traceback for debugging
+            import traceback
+            traceback.print_exc()
 
     def on_invoke(self, user_content_manager, js_result):
         call_id = None
