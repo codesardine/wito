@@ -64,6 +64,7 @@ class WebView(WebKit.WebView):
         else:
             self.api = API(self, window, wito_config.get("version"), wito_config.get("witoDevMode"))
 
+        self.connect("decide-policy", self.on_decide_policy)
         self.connect("load-changed", self.on_load_changed)
         self.get_user_content_manager().register_script_message_handler("Invoke")
         self.get_user_content_manager().connect("script-message-received::Invoke", self.on_invoke)
@@ -75,6 +76,26 @@ class WebView(WebKit.WebView):
         self.inject_bindings() 
         self.load_extensions()
         self.cleanup()
+
+    def on_decide_policy(self, webview, decision, decision_type):
+        if decision_type == WebKit.PolicyDecisionType.NAVIGATION_ACTION:
+            navigation_action = decision.get_navigation_action()
+            request = navigation_action.get_request()
+            uri = request.get_uri()
+
+            if uri.startswith('wito://'):
+                return True
+
+            try:
+                context = Gio.AppLaunchContext()
+                Gio.AppInfo.launch_default_for_uri(uri, context)
+                decision.ignore()
+                return True
+
+            except GLib.Error as e:
+                print(f"Error opening external application: {e}")
+                decision.ignore()
+                return True
 
     def cleanup(self):
         if not self.dev_mode:
