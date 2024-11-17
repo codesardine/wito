@@ -192,6 +192,17 @@ class API(PythonJavaScriptBridge):
             ```
         """
         return self.win.is_fullscreen()
+    
+    @expose
+    def win_close(self):
+        """Close the window.
+
+        JavaScript Usage:
+            ```javascript
+            await wito.win_close();
+            ```
+        """
+        return self.win.close()
 
     @expose
     def win_fullscreen(self):
